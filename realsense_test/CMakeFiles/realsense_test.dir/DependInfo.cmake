@@ -4,12 +4,13 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/gao/slam_ws/src/realsense_test/realsense_test.cpp" "/home/gao/slam_ws/src/realsense_test/CMakeFiles/realsense_test.dir/realsense_test.cpp.o"
+  "/home/gao/slam_ws/src/real_sense_playground/realsense_test/realsense_test.cpp" "/home/gao/slam_ws/src/real_sense_playground/realsense_test/CMakeFiles/realsense_test.dir/realsense_test.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "/usr/local/include/opencv4"
   )
 
 # Targets to which this target links.
