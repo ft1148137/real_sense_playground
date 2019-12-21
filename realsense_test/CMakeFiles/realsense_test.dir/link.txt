@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/realsense_test.dir/realsense_test.cpp.o  -o realsense_test -lrealsense2 
