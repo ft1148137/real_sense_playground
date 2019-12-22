@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/gao/slam_ws/src/real_sense_playground/realsense_test
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -123,6 +123,46 @@ realsense_test/fast:
 	$(MAKE) -f CMakeFiles/realsense_test.dir/build.make CMakeFiles/realsense_test.dir/build
 .PHONY : realsense_test/fast
 
+#=============================================================================
+# Target rules for targets named orb_match
+
+# Build rule for target.
+orb_match: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 orb_match
+.PHONY : orb_match
+
+# fast build rule for target.
+orb_match/fast:
+	$(MAKE) -f CMakeFiles/orb_match.dir/build.make CMakeFiles/orb_match.dir/build
+.PHONY : orb_match/fast
+
+orb_match.o: orb_match.cpp.o
+
+.PHONY : orb_match.o
+
+# target to build an object file
+orb_match.cpp.o:
+	$(MAKE) -f CMakeFiles/orb_match.dir/build.make CMakeFiles/orb_match.dir/orb_match.cpp.o
+.PHONY : orb_match.cpp.o
+
+orb_match.i: orb_match.cpp.i
+
+.PHONY : orb_match.i
+
+# target to preprocess a source file
+orb_match.cpp.i:
+	$(MAKE) -f CMakeFiles/orb_match.dir/build.make CMakeFiles/orb_match.dir/orb_match.cpp.i
+.PHONY : orb_match.cpp.i
+
+orb_match.s: orb_match.cpp.s
+
+.PHONY : orb_match.s
+
+# target to generate assembly for a file
+orb_match.cpp.s:
+	$(MAKE) -f CMakeFiles/orb_match.dir/build.make CMakeFiles/orb_match.dir/orb_match.cpp.s
+.PHONY : orb_match.cpp.s
+
 realsense_test.o: realsense_test.cpp.o
 
 .PHONY : realsense_test.o
@@ -156,9 +196,13 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... realsense_test"
-	@echo "... edit_cache"
+	@echo "... orb_match"
+	@echo "... orb_match.o"
+	@echo "... orb_match.i"
+	@echo "... orb_match.s"
 	@echo "... realsense_test.o"
 	@echo "... realsense_test.i"
 	@echo "... realsense_test.s"
