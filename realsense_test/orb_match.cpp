@@ -29,6 +29,21 @@ int main(int argc, char *argv[]){
 			Mat_buffer.push_back(color_now);
 		}
 		std::vector<cv::KeyPoint> keypoints_1, keypoints_2;
+		cv::cuda::GpuMat descriptors_1,descriptors_2;
+		
+		cv::Ptr<cv::FeatureDetector> detector = cv::cuda::ORB::create();
+		cv::Ptr<cv::DescriptorExtractor> descriptor = cv::cuda::ORB::create();
+		cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForece-Hamming");
+		
+		std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+		detector -> detect(Mat_buffer[0],keypoints_1);
+		detector -> detect(Mat_buffer[1],keypoints_2);
+		
+		descriptor -> compute(Mat_buffer[0],keypoints_1,descriptors_1);
+		descriptor -> compute(Mat_buffer[1],keypoints_2,descriptors_2);
+		std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+
+				
 		cv::Mat mat_plot;
 		Mat_buffer[0].download(mat_plot);
 		cv::imshow("Display_color",mat_plot);
