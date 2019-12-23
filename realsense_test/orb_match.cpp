@@ -62,21 +62,37 @@ int main(int argc, char *argv[]){
 		double min_dist = min_max.first -> distance;
 		double max_dist = min_max.second -> distance;
 		
-		//std::vector<cv::DMat> good_matches
-		
-		cv::Mat mat_plot;
-		Mat_buffer[0].download(mat_plot);
-		cv::imshow("Display_color",mat_plot);
-		char c = cv::waitKey(1);
-		if (c =='s'){}
-		else if (c == 'q'){
-			break;
+		std::vector<cv::DMatch> good_matches;
+		for(int i= 0; i<descriptors_1.rows;i++){
+			if(matches[i].distance <= std::max(2*min_dist,30.0)){
+				good_matches.push_back(matches[i]);
+				}
 			}
-		Mat_buffer.clear();
-	//	char c=' ';
-	//	while (c !='q'){
-	//		c = cv::waitKey(1);
+		
+		cv::Mat img_match;
+		cv::Mat img_goodmatch;
+		cv::Mat img_0;
+		cv::Mat img_1;
+		Mat_buffer[0].download(img_0);
+		Mat_buffer[1].download(img_1);
+		
+		cv::drawMatches(img_0,keypoints_1,img_1,keypoints_2,matches, img_match);
+		cv::drawMatches(img_0,keypoints_1,img_1,keypoints_2,good_matches, img_goodmatch);
+		
+		cv::imshow("all_matches",img_match);
+		cv::imshow("good_match",img_goodmatch);
+
+
+	//	char c = cv::waitKey(1);
+	//	if (c =='s'){}
+	//	else if (c == 'q'){
+	//		break;
 	//		}
+		Mat_buffer.clear();
+		char c=' ';
+		while (c !='q'){
+			c = cv::waitKey(1);
+			}
 
 		}
 	return 0;
