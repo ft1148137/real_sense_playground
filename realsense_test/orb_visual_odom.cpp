@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
 	rs2::frameset frames;
 	std::vector<cv::cuda::GpuMat> Mat_buffer;
 	std::vector<cv::Mat> Mat_depth_buffer;
-	for(int i = 0; i<30;i++){
+	for(int i = 0; i<10;i++){
 					frames = realsense_pip.wait_for_frames();
 }
 	while(true){
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]){
 		cv::cuda::GpuMat descriptors_1,descriptors_2;
 		cv::Mat K = (cv::Mat_<double>(3, 3) << intrinsics.fx, 0, intrinsics.ppx, 0, intrinsics.fy, intrinsics.ppy, 0, 0, 1);
 		
-		cv::Ptr<cv::FeatureDetector> detector = cv::cuda::ORB::create(200);
+		cv::Ptr<cv::FeatureDetector> detector = cv::cuda::ORB::create(100);
 		cv::Ptr<cv::DescriptorExtractor> descriptor = cv::cuda::ORB::create();
 		cv::Ptr<cv::cuda::DescriptorMatcher> matcher = cv::cuda::DescriptorMatcher::createBFMatcher(cv::NORM_HAMMING);
 		//cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
@@ -100,10 +100,47 @@ int main(int argc, char *argv[]){
 			float dd1 = float(d1) * scale;
 			float dd2 = float(d2) * scale;
 			
+			std::cout<<dd1<<std::endl;
+			
 			pts1.push_back(cv::Point3f(p1.x * dd1, p1.y * dd1, dd1));
 			pts2.push_back(cv::Point3f(p2.x * dd2, p2.y * dd2, dd2));
 			}
 		  std::cout << "3d-3d pairs: " << pts1.size() << std::endl;
+		  
+		  //////svd//////////
+		  cv::Point3f p1,p2;
+		  int N = pts1.size();
+		  for(int i = 0;i < N; i++){
+			  p1 += pts1[i];
+			  p2 += pts2[i];
+			  }
+		  p1 = cv::Point3f(cv::Vec3f(p1)/N);
+		  p2 = cv::Point3f(cv::Vec3f(p2)/N);
+			  
+		  std::vector<cv::Point3f> q1(N),q2(N);
+		  for(int i = 0; i < N; i ++){
+			   q1[i] = pts1[i] - p1;
+			   q2[i] = pts2[i] - p2;
+			   }
+		   Eigen:: Matrix3d W = Eigen::Matrix3d::Zero();
+		   
+		   for (int i = 0; i < N; i ++){
+			   W += Eigen::Vector3d(q1[i].x, q1[i].y, q1[i].z) * Eigen::Vector3d(q1[i].x, q1[i].y, q1[i].z).transpose();
+			   }
+			Eigen::JacobiSVD<Eigen::Matrix3d> svd(W, Eigen::ComputeFullU | Eigen::ComputeFullV);
+			Eigen::Matrix3d U = svd.matrixU();
+			Eigen::Matrix3d V = svd.matrixV();
+			
+			Eigen::Matrix3d R_ = U * (V.transpose());
+			if (R_.determinant() < 0) {
+				R_ = -R_;
+			}
+			Eigen::Vector3d t_ = Eigen::Vector3d(p1.x, p1.y, p1.z) - R_ * Eigen::Vector3d(p2.x, p2.y, p2.z);
+			
+		   cv::Mat R = (cv::Mat_<double>(3,3)<<R_(0,0),R_(0,1),R_(0,2),R_(1,0),R_(1,1),R_(1,2),R_(2,0),R_(2,1),R_(2,2));
+		   cv::Mat t = (cv::Mat_<double>(3,1)<<t_(0,0), t_(1,0),t_(2,0));
+		   std::cout<<"t: "<<t_(0,0)<<" "<<t_(1,0)<<" "<<t_(2,0)<<std::endl;
+			
 		//cv::Mat img_goodmatch;
 		//cv::Mat img_0;
 		//cv::Mat img_1;
@@ -127,6 +164,7 @@ int main(int argc, char *argv[]){
 			c = cv::waitKey(1);
 			}
 
-		}
+
+	}
 	return 0;
 	}
