@@ -60,13 +60,50 @@ CMAKE_SOURCE_DIR = /home/gao/slam_ws/src/real_sense_playground/realsense_test
 CMAKE_BINARY_DIR = /home/gao/slam_ws/src/real_sense_playground/realsense_test
 
 #=============================================================================
+# Target rules for target CMakeFiles/orb_visual_odom.dir
+
+# All Build rule for target.
+CMakeFiles/orb_visual_odom.dir/all:
+	$(MAKE) -f CMakeFiles/orb_visual_odom.dir/build.make CMakeFiles/orb_visual_odom.dir/depend
+	$(MAKE) -f CMakeFiles/orb_visual_odom.dir/build.make CMakeFiles/orb_visual_odom.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gao/slam_ws/src/real_sense_playground/realsense_test/CMakeFiles --progress-num=3,4 "Built target orb_visual_odom"
+.PHONY : CMakeFiles/orb_visual_odom.dir/all
+
+# Include target in all.
+all: CMakeFiles/orb_visual_odom.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/orb_visual_odom.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gao/slam_ws/src/real_sense_playground/realsense_test/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/orb_visual_odom.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/gao/slam_ws/src/real_sense_playground/realsense_test/CMakeFiles 0
+.PHONY : CMakeFiles/orb_visual_odom.dir/rule
+
+# Convenience name for target.
+orb_visual_odom: CMakeFiles/orb_visual_odom.dir/rule
+
+.PHONY : orb_visual_odom
+
+# clean rule for target.
+CMakeFiles/orb_visual_odom.dir/clean:
+	$(MAKE) -f CMakeFiles/orb_visual_odom.dir/build.make CMakeFiles/orb_visual_odom.dir/clean
+.PHONY : CMakeFiles/orb_visual_odom.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/orb_visual_odom.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/realsense_test.dir
 
 # All Build rule for target.
 CMakeFiles/realsense_test.dir/all:
 	$(MAKE) -f CMakeFiles/realsense_test.dir/build.make CMakeFiles/realsense_test.dir/depend
 	$(MAKE) -f CMakeFiles/realsense_test.dir/build.make CMakeFiles/realsense_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gao/slam_ws/src/real_sense_playground/realsense_test/CMakeFiles --progress-num=3,4 "Built target realsense_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gao/slam_ws/src/real_sense_playground/realsense_test/CMakeFiles --progress-num=5,6 "Built target realsense_test"
 .PHONY : CMakeFiles/realsense_test.dir/all
 
 # Include target in all.

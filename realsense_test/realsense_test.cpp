@@ -12,10 +12,12 @@ int main (int argc, char *argv[])
 	config.enable_stream(RS2_STREAM_DEPTH,640,480,RS2_FORMAT_Z16,15);
 	config.enable_stream(RS2_STREAM_COLOR,640,480,RS2_FORMAT_BGR8,15);
 	rs2::pipeline_profile pipeProfile = realsense_pip.start(config);
+	auto sensor = pipeProfile.get_device().first<rs2::depth_sensor>();
+	auto scale =  sensor.get_depth_scale();
 	rs2_intrinsics intrinsics = pipeProfile.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>().get_intrinsics();
 	rs2::frameset frames;
 	std::cout<<"\n width: "<<intrinsics.width<<"\n height:"<<intrinsics.height<<"\n ppx: "<<intrinsics.ppx<<"\n ppy:"
-			 <<intrinsics.ppy<<"\n fx: "<<intrinsics.fx<<"\n fy:"<<intrinsics.fy<<std::endl;
+			 <<intrinsics.ppy<<"\n fx: "<<intrinsics.fx<<"\n fy:"<<intrinsics.fy<<"\n depth scale: "<< scale <<std::endl;
 	while(true){
 		frames = realsense_pip.wait_for_frames();
 		rs2::frame ir_frame = frames.first(RS2_STREAM_INFRARED);

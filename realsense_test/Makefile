@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named orb_visual_odom
+
+# Build rule for target.
+orb_visual_odom: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 orb_visual_odom
+.PHONY : orb_visual_odom
+
+# fast build rule for target.
+orb_visual_odom/fast:
+	$(MAKE) -f CMakeFiles/orb_visual_odom.dir/build.make CMakeFiles/orb_visual_odom.dir/build
+.PHONY : orb_visual_odom/fast
+
+#=============================================================================
 # Target rules for targets named realsense_test
 
 # Build rule for target.
@@ -163,6 +176,33 @@ orb_match.cpp.s:
 	$(MAKE) -f CMakeFiles/orb_match.dir/build.make CMakeFiles/orb_match.dir/orb_match.cpp.s
 .PHONY : orb_match.cpp.s
 
+orb_visual_odom.o: orb_visual_odom.cpp.o
+
+.PHONY : orb_visual_odom.o
+
+# target to build an object file
+orb_visual_odom.cpp.o:
+	$(MAKE) -f CMakeFiles/orb_visual_odom.dir/build.make CMakeFiles/orb_visual_odom.dir/orb_visual_odom.cpp.o
+.PHONY : orb_visual_odom.cpp.o
+
+orb_visual_odom.i: orb_visual_odom.cpp.i
+
+.PHONY : orb_visual_odom.i
+
+# target to preprocess a source file
+orb_visual_odom.cpp.i:
+	$(MAKE) -f CMakeFiles/orb_visual_odom.dir/build.make CMakeFiles/orb_visual_odom.dir/orb_visual_odom.cpp.i
+.PHONY : orb_visual_odom.cpp.i
+
+orb_visual_odom.s: orb_visual_odom.cpp.s
+
+.PHONY : orb_visual_odom.s
+
+# target to generate assembly for a file
+orb_visual_odom.cpp.s:
+	$(MAKE) -f CMakeFiles/orb_visual_odom.dir/build.make CMakeFiles/orb_visual_odom.dir/orb_visual_odom.cpp.s
+.PHONY : orb_visual_odom.cpp.s
+
 realsense_test.o: realsense_test.cpp.o
 
 .PHONY : realsense_test.o
@@ -197,12 +237,16 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... orb_visual_odom"
 	@echo "... rebuild_cache"
 	@echo "... realsense_test"
 	@echo "... orb_match"
 	@echo "... orb_match.o"
 	@echo "... orb_match.i"
 	@echo "... orb_match.s"
+	@echo "... orb_visual_odom.o"
+	@echo "... orb_visual_odom.i"
+	@echo "... orb_visual_odom.s"
 	@echo "... realsense_test.o"
 	@echo "... realsense_test.i"
 	@echo "... realsense_test.s"

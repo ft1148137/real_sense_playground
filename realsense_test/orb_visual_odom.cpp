@@ -6,19 +6,34 @@
 #include "opencv2/opencv.hpp"
 #include <opencv2/core/cuda.hpp>
 #include <chrono>
+#include <opencv2/calib3d/calib3d.hpp>
+#include <Eigen/Core>
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+#include <Eigen/SVD>
 
+cv::Point2d pixel2cam(const cv::Point2d &p, const cv::Mat &K) {
+  return cv::Point2d(
+    (p.x - K.at<double>(0, 2)) / K.at<double>(0, 0),
+    (p.y - K.at<double>(1, 2)) / K.at<double>(1, 1)
+  );
+}
 
 int main(int argc, char *argv[]){
 	rs2::pipeline realsense_pip;
 	rs2::config config;
 	config.enable_stream(RS2_STREAM_COLOR,640,480,RS2_FORMAT_BGR8,30);
-	//config.enable_stream(RS2_STREAM_DEPTH,640,480,RS2_FORMAT_Z16,15);
+	config.enable_stream(RS2_STREAM_DEPTH,640,480,RS2_FORMAT_Z16,30);
 	//config.enable_stream(RS2_STREAM_INFRARED,640,480,RS2_FORMAT_Y8,15);
 	
-
-	realsense_pip.start(config);
+	rs2::pipeline_profile pipeProfile = realsense_pip.start(config);
+	auto sensor = pipeProfile.get_device().first<rs2::depth_sensor>();
+	auto scale =  sensor.get_depth_scale();
+	rs2_intrinsics intrinsics = pipeProfile.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>().get_intrinsics();
+	
 	rs2::frameset frames;
 	std::vector<cv::cuda::GpuMat> Mat_buffer;
+	std::vector<cv::cuda::GpuMat> Mat_depth_buffer;
 	for(int i = 0; i<30;i++){
 					frames = realsense_pip.wait_for_frames();
 }
@@ -27,13 +42,17 @@ int main(int argc, char *argv[]){
 			frames = realsense_pip.wait_for_frames();
 			rs2::frame color_frame = frames.get_color_frame();
 			cv::Mat color(cv::Size(640,480),CV_8UC3,(void*)color_frame.get_data(),cv::Mat::AUTO_STEP);
+			cv::Mat depth(cv::Size(640,480),CV_16UC1,(void*)color_frame.get_data(),cv::Mat::AUTO_STEP);
 			cv::Mat wb_img;
 			cv::cvtColor(color,wb_img,cv::COLOR_BGR2GRAY);
 			cv::cuda::GpuMat wb_now(wb_img);
+			cv::cuda::GpuMat depth_now(depth);
 			Mat_buffer.push_back(wb_now);
+			Mat_depth_buffer.push_back(depth_now);
 		}
 		std::vector<cv::KeyPoint> keypoints_1, keypoints_2;
 		cv::cuda::GpuMat descriptors_1,descriptors_2;
+		cv::Mat K = (cv::Mat_<double>(3, 3) << intrinsics.fx, 0, intrinsics.ppx, 0, intrinsics.fy, intrinsics.ppy, 0, 0, 1);
 		
 		cv::Ptr<cv::FeatureDetector> detector = cv::cuda::ORB::create(200);
 		cv::Ptr<cv::DescriptorExtractor> descriptor = cv::cuda::ORB::create();
@@ -69,18 +88,32 @@ int main(int argc, char *argv[]){
 				}
 			}
 		
-		cv::Mat img_match;
-		cv::Mat img_goodmatch;
-		cv::Mat img_0;
-		cv::Mat img_1;
-		Mat_buffer[0].download(img_0);
-		Mat_buffer[1].download(img_1);
+		std::vector<cv::Point3f> pts1, pts2;
 		
-		cv::drawMatches(img_0,keypoints_1,img_1,keypoints_2,matches, img_match);
-		cv::drawMatches(img_0,keypoints_1,img_1,keypoints_2,good_matches, img_goodmatch);
+		for(cv::DMatch m:good_matches){
+			ushort d1 = Mat_depth_buffer[0].ptr<unsigned short>(int(keypoints_1[m.queryIdx].pt.y))[int(keypoints_1[m.queryIdx].pt.x)];
+			ushort d2 = Mat_depth_buffer[1].ptr<unsigned short>(int(keypoints_2[m.trainIdx].pt.y))[int(keypoints_1[m.trainIdx].pt.x)];
+			if (d1 == 0 || d2 == 0) 
+			continue;
+			cv::Point2d p1 = pixel2cam(keypoints_1[m.queryIdx].pt, K);
+			cv::Point2d p2 = pixel2cam(keypoints_2[m.trainIdx].pt, K);
+			
+			float dd1 = float(d1) * scale;
+			float dd2 = float(d2) * scale;
+			
+			pts1.push_back(cv::Point3f(p1.x * dd1, p1.y * dd1, dd1));
+			pts2.push_back(cv::Point3f(p2.x * dd2, p2.y * dd2, dd2));
+			}
+		//cv::Mat img_goodmatch;
+		//cv::Mat img_0;
+		//cv::Mat img_1;
+		//Mat_buffer[0].download(img_0);
+		//Mat_buffer[1].download(img_1);
 		
-		cv::imshow("all_matches",img_match);
-		cv::imshow("good_match",img_goodmatch);
+	//	cv::drawMatches(img_0,keypoints_1,img_1,keypoints_2,good_matches, img_goodmatch);
+		
+
+	//	cv::imshow("good_match",img_goodmatch);
 
 
 	//	char c = cv::waitKey(1);
