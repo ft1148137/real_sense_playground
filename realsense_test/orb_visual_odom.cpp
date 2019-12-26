@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
 	
 	rs2::frameset frames;
 	std::vector<cv::cuda::GpuMat> Mat_buffer;
-	std::vector<cv::cuda::GpuMat> Mat_depth_buffer;
+	std::vector<cv::Mat> Mat_depth_buffer;
 	for(int i = 0; i<30;i++){
 					frames = realsense_pip.wait_for_frames();
 }
@@ -46,9 +46,8 @@ int main(int argc, char *argv[]){
 			cv::Mat wb_img;
 			cv::cvtColor(color,wb_img,cv::COLOR_BGR2GRAY);
 			cv::cuda::GpuMat wb_now(wb_img);
-			cv::cuda::GpuMat depth_now(depth);
 			Mat_buffer.push_back(wb_now);
-			Mat_depth_buffer.push_back(depth_now);
+			Mat_depth_buffer.push_back(depth);
 		}
 		std::vector<cv::KeyPoint> keypoints_1, keypoints_2;
 		cv::cuda::GpuMat descriptors_1,descriptors_2;
@@ -89,7 +88,7 @@ int main(int argc, char *argv[]){
 			}
 		
 		std::vector<cv::Point3f> pts1, pts2;
-		
+		std::cout<<"create 3d point clound "<<std::endl;
 		for(cv::DMatch m:good_matches){
 			ushort d1 = Mat_depth_buffer[0].ptr<unsigned short>(int(keypoints_1[m.queryIdx].pt.y))[int(keypoints_1[m.queryIdx].pt.x)];
 			ushort d2 = Mat_depth_buffer[1].ptr<unsigned short>(int(keypoints_2[m.trainIdx].pt.y))[int(keypoints_1[m.trainIdx].pt.x)];
@@ -104,6 +103,7 @@ int main(int argc, char *argv[]){
 			pts1.push_back(cv::Point3f(p1.x * dd1, p1.y * dd1, dd1));
 			pts2.push_back(cv::Point3f(p2.x * dd2, p2.y * dd2, dd2));
 			}
+		  std::cout << "3d-3d pairs: " << pts1.size() << std::endl;
 		//cv::Mat img_goodmatch;
 		//cv::Mat img_0;
 		//cv::Mat img_1;
